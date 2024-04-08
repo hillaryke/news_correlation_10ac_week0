@@ -3,6 +3,7 @@ from src.loader import DataLoader
 from src.utils import largest_news_count_websites
 from src.utils import largest_number_of_traffic_websites
 from src.utils import get_countries_with_most_media_organizations
+from src.utils import get_countries_with_articles_written_about_them
 
 data_path = cfg.news_data_path
 
@@ -23,4 +24,8 @@ print("Top 10 websites with the largest number of visitors:")
 
 # Display the top 10 countries with the highest number of news media organizations
 print("Top 10 countries with the highest number of news media organizations:")
-print(get_countries_with_most_media_organizations(domain_info, top_N))
+# print(get_countries_with_most_media_organizations(domain_info, top_N))
+
+# Display the top 10 countries with the highest number of articles written about them
+print("Top 10 countries with the highest number of articles written about them:")
+print(get_countries_with_articles_written_about_them(news_data, top_N))
