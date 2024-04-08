@@ -9,21 +9,21 @@ class NewsDataLoader:
 
 
     '''
-    def __init__(self, news_data_path, domains_path, traffic_path):
+    def __init__(self, data_path, domains_path, traffic_path):
         '''
         path: path to the news exported data folder
         '''
-        self.news_data = news_data_path
+        self.data_path = data_path_path
         self.domains_path = domains_path
         self.traffic_path = traffic_path
 
-        self.news_data = self.get_news_data()
+        self.data_path = self.get_data_path()
         self.domains_data = self.get_domains_data()
         self.traffic_data = self.get_traffic_data()
 
-    def load_news_data(self):
+    def load_new_data(self):
         """Loads news articles from data.csv"""
-        news_df = pd.read_csv(os.path.join(self.news_data, "data.csv"))
+        news_df = pd.read_csv(os.path.join(self.data_path, "data/data.csv"))
         return news_df
 
     def load_domain_info(self):
