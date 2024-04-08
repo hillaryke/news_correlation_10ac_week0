@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import argparse
 
 # Create wrapper classes for using news_sdk
 class NewsDataLoader:
@@ -34,3 +35,9 @@ class NewsDataLoader:
         """Loads website traffic data"""
         traffic_df = pd.read_csv(os.path.join(self.traffic_path, "traffic_data.csv"))
         return traffic_df
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Export News data')
+
+    parser.add_argument('--zip', help="Name of a zip file to import")
+    args = parser.parse_args()
