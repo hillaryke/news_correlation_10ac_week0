@@ -5,7 +5,7 @@ from src import config
 
 
 # Create wrapper classes for using news_sdk
-class NewsDataLoader:
+class DataLoader:
     '''
     News exported data IO class.
     '''
