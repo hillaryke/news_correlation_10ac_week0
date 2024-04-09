@@ -54,3 +54,27 @@ def get_countries_with_articles_written_about_them(news_data, top_N):
 
     # Return the top N countries
     return country_counts.most_common(top_N)
+
+def get_websites_reporting_on_regions(news_data, regions):
+    """Get the websites that reported about specific regions"""
+
+    # Load the SpaCy model
+    nlp = spacy.load("en_core_web_sm")
+
+    # Initialize a dictionary to store the results
+    region_counts = {region: Counter() for region in regions}
+
+    # Process each article
+    for _, row in news_data.iterrows():
+        doc = nlp(row['content'])
+
+        # Extract country names
+        countries = [ent.text for ent in doc.ents if ent.label_ == 'GPE']
+
+        # Check if the country belongs to one of the regions
+        for country in countries:
+            for region, region_countries in regions.items():
+                if country in region_countries:
+                    region_counts[region][row['source_name']] += 1
+
+    return region_counts
