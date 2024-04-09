@@ -2,6 +2,25 @@ import spacy
 from collections import Counter
 from textblob import TextBlob
 import pandas as pd
+import re
+
+# Load the data
+news_data = pd.read_csv("data.csv")
+
+# Function to preprocess source_name into source_id
+def preprocess_source_id(source_name):
+    # Convert to lowercase
+    source_id = source_name.lower()
+    # Replace spaces with hyphens
+    source_id = source_id.replace(" ", "-")
+    # Remove special characters
+    source_id = re.sub(r'\W+', '', source_id)
+    return source_id
+
+
+
+# Save the DataFrame with the new source_id column
+news_data.to_csv("data.csv", index=False)
 
 def largest_news_count_websites(news_data, top_N):
     """Get the top N websites with the largest number of news articles"""

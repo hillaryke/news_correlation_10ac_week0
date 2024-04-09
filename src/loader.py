@@ -3,7 +3,6 @@ import os
 import argparse
 from src import config
 
-
 # Create wrapper classes for using news_sdk
 class DataLoader:
     '''

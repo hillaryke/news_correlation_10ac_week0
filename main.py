@@ -1,7 +1,7 @@
 from src.config import cfg  # Import the config file
 from src.loader import DataLoader
 from src.regions import AFRICA, EU, MIDDLE_EAST
-from src.utils import largest_news_count_websites
+from src.utils import largest_news_count_websites, preprocess_source_id
 from src.utils import largest_number_of_traffic_websites
 from src.utils import get_countries_with_most_media_organizations
 from src.utils import get_countries_with_articles_written_about_them
@@ -15,6 +15,9 @@ data_loader = DataLoader()
 traffic_data = data_loader.load_traffic_data()
 news_data = data_loader.load_news_data()
 domain_info = data_loader.load_domain_info()
+
+# Apply the function to the source_name column to create the source_id column
+news_data['source_id'] = news_data['source_name'].apply(preprocess_source_id)
 
 top_N = 10
 
