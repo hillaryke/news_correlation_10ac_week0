@@ -10,6 +10,10 @@ parser.add_argument('--output', type=str, default='news_analysis.csv',
                 help='filename to write analysis output in CSV format')
 parser.add_argument('--news_data_path', required=False, type=str,
                     help='directory to where main news dataset reside')
+parser.add_argument('--domains_path', required=False, type=str,
+                    help='directory to where domains location dataset reside')
+parser.add_argument('--traffic_path', required=False, type=str,
+                    help='directory to where website traffic dataset reside')
 
 
 cfg = parser.parse_args()
