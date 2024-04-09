@@ -81,7 +81,6 @@ def get_websites_reporting_on_regions(news_data, regions):
 
     return region_counts
 
-
 def calculate_sentiment(text):
     """Calculate sentiment score using TextBlob"""
     return TextBlob(text).sentiment.polarity
@@ -97,17 +96,39 @@ def sentiment_statistics(news_data):
     median_sentiment = grouped.median()
     variance_sentiment = grouped.var()
 
-    positive_sentiment = (grouped > 0).sum()
-    neutral_sentiment = (grouped == 0).sum()
-    negative_sentiment = (grouped < 0).sum()
+    # Return the results as a DataFrame
+    return pd.DataFrame({
+        'mean_sentiment': mean_sentiment,
+        'median_sentiment': median_sentiment,
+        'variance_sentiment': variance_sentiment
+    })
+
+def sentiment_statistics(news_data):
+    """Calculate sentiment statistics for each website"""
+    # Calculate sentiment scores
+    news_data['sentiment'] = news_data['content'].apply(calculate_sentiment)
+
+    # Create columns for positive, neutral, and negative sentiment counts
+    news_data['positive_sentiment'] = (news_data['sentiment'] > 0).astype(int)
+    news_data['neutral_sentiment'] = (news_data['sentiment'] == 0).astype(int)
+    news_data['negative_sentiment'] = (news_data['sentiment'] < 0).astype(int)
+
+    # Group by 'source_name' and calculate mean, median, variance, and sentiment counts
+    grouped = news_data.groupby('source_name')
+    mean_sentiment = grouped['sentiment'].mean()
+    median_sentiment = grouped['sentiment'].median()
+    variance_sentiment = grouped['sentiment'].var()
+    positive_sentiment = grouped['positive_sentiment'].sum()
+    neutral_sentiment = grouped['neutral_sentiment'].sum()
+    negative_sentiment = grouped['negative_sentiment'].sum()
 
     # Return the results as a DataFrame
     return pd.DataFrame({
         'mean_sentiment': mean_sentiment,
         'median_sentiment': median_sentiment,
         'variance_sentiment': variance_sentiment,
-
         'positive_sentiment': positive_sentiment,
         'neutral_sentiment': neutral_sentiment,
         'negative_sentiment': negative_sentiment
     })
+
