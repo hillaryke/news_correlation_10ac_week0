@@ -1,5 +1,7 @@
 import spacy
 from collections import Counter
+from textblob import TextBlob
+import pandas as pd
 
 def largest_news_count_websites(news_data, top_N):
     """Get the top N websites with the largest number of news articles"""
@@ -78,3 +80,34 @@ def get_websites_reporting_on_regions(news_data, regions):
                     region_counts[region][row['source_name']] += 1
 
     return region_counts
+
+
+def calculate_sentiment(text):
+    """Calculate sentiment score using TextBlob"""
+    return TextBlob(text).sentiment.polarity
+
+def sentiment_statistics(news_data):
+    """Calculate sentiment statistics for each website"""
+    # Calculate sentiment scores
+    news_data['sentiment'] = news_data['content'].apply(calculate_sentiment)
+
+    # Group by 'source_name' and calculate mean, median, and variance
+    grouped = news_data.groupby('source_name')['sentiment']
+    mean_sentiment = grouped.mean()
+    median_sentiment = grouped.median()
+    variance_sentiment = grouped.var()
+
+    positive_sentiment = (grouped > 0).sum()
+    neutral_sentiment = (grouped == 0).sum()
+    negative_sentiment = (grouped < 0).sum()
+
+    # Return the results as a DataFrame
+    return pd.DataFrame({
+        'mean_sentiment': mean_sentiment,
+        'median_sentiment': median_sentiment,
+        'variance_sentiment': variance_sentiment,
+
+        'positive_sentiment': positive_sentiment,
+        'neutral_sentiment': neutral_sentiment,
+        'negative_sentiment': negative_sentiment
+    })

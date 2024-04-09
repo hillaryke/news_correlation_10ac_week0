@@ -1,12 +1,12 @@
 from src.config import cfg  # Import the config file
 from src.loader import DataLoader
+from src.regions import AFRICA, EU, MIDDLE_EAST
 from src.utils import largest_news_count_websites
 from src.utils import largest_number_of_traffic_websites
 from src.utils import get_countries_with_most_media_organizations
 from src.utils import get_countries_with_articles_written_about_them
 from src.utils import get_websites_reporting_on_regions
-
-from src.regions import AFRICA, EU, MIDDLE_EAST
+from src.utils import sentiment_statistics
 
 
 data_path = cfg.news_data_path
@@ -32,24 +32,31 @@ print("Top 10 countries with the highest number of news media organizations:")
 
 # Display the top 10 countries with the highest number of articles written about them
 print("Top 10 countries with the highest number of articles written about them:")
-print(get_countries_with_articles_written_about_them(news_data, top_N))
+# print(get_countries_with_articles_written_about_them(news_data, top_N))
 
-# Define the regions
-regions = {
-    'Africa': AFRICA,
-    'EU': EU,
-    'Middle East': MIDDLE_EAST,
-    'US': ['United States'],
-    'China': ['China'],
-    'Russia': ['Russia'],
-    'Ukraine': ['Ukraine']
-}
-
-# Get the websites that reported about the specified regions
-region_counts = get_websites_reporting_on_regions(news_data, regions)
+# # Define the regions
+# regions = {
+#     'Africa': AFRICA,
+#     'EU': EU,
+#     'Middle East': MIDDLE_EAST,
+#     'US': ['United States'],
+#     'China': ['China'],
+#     'Russia': ['Russia'],
+#     'Ukraine': ['Ukraine']
+# }
+#
+# # Get the websites that reported about the specified regions
+# region_counts = get_websites_reporting_on_regions(news_data, regions)
 
 # Print the results
-for region, counts in region_counts.items():
-    print(f"Websites that reported about {region}:")
-    print(counts.most_common(10))
-    print()
+# for region, counts in region_counts.items():
+#     print(f"Websites that reported about {region}:")
+#     print(counts.most_common(10))
+#     print()
+
+# Calculate sentiment statistics
+sentiment_stats = sentiment_statistics(news_data)
+
+# Display the sentiment statistics
+print("Sentiment Statistics:")
+print(sentiment_stats)
