@@ -2,9 +2,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 from numpy import array, log
 import pandas as pd
 
-def extract_keywords_custom_tfidf(news_data):
+def extract_keywords_custom_tfidf(text_data, max_features=10):
     # Use the 'article' column as the text data
-    array_text = news_data['article'].dropna().tolist()
+    array_text = text_data.dropna().tolist()
 
     vectorizer = CountVectorizer()
     # Fit the vectorizer on the text data
