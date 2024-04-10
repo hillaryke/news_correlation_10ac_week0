@@ -7,6 +7,10 @@ from src.utils import get_countries_with_most_media_organizations
 from src.utils import get_countries_with_articles_written_about_them
 from src.utils import get_websites_reporting_on_regions
 from src.utils import sentiment_statistics
+from src.keyword_extraction.custom_tfidf_keyword_extraction import extract_keywords_custom_tfidf
+
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 data_path = cfg.news_data_path
@@ -58,8 +62,16 @@ print("Top 10 countries with the highest number of articles written about them:"
 #     print()
 
 # Calculate sentiment statistics
-sentiment_stats = sentiment_statistics(news_data)
+# sentiment_stats = sentiment_statistics(news_data)
+#
+# # Display the sentiment statistics
+# print("Sentiment Statistics:")
+# print(sentiment_stats)
 
-# Display the sentiment statistics
-print("Sentiment Statistics:")
-print(sentiment_stats)
+# Extract keywords using custom TF-IDF
+custom_tfidf_keywords = extract_keywords_custom_tfidf(news_data)
+
+print("Custom TF-IDF keywords:")
+for i, keywords in enumerate(custom_tfidf_keywords):
+    print(f"Keywords of article {i+1}: {keywords}")
+
