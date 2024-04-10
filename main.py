@@ -75,3 +75,18 @@ print("Custom TF-IDF keywords:")
 for i, keywords in enumerate(custom_tfidf_keywords):
     print(f"Keywords of article {i+1}: {keywords}")
 
+# COMPARE SIMILARITY BETWEEN KEYWORDS IN TITLE AND CONTENT
+
+# Extract keywords using custom TF-IDF for both title and content
+news_data['title_keywords'] = extract_keywords_custom_tfidf(news_data['title'])
+news_data['content_keywords'] = extract_keywords_custom_tfidf(news_data['content'])
+
+# Calculate the similarity between the keywords in the title and the content
+vectorizer = TfidfVectorizer()
+title_tfidf = vectorizer.fit_transform([' '.join(keywords) for keywords in news_data['title_keywords']])
+content_tfidf = vectorizer.transform([' '.join(keywords) for keywords in news_data['content_keywords']])
+similarity_scores = cosine_similarity(title_tfidf, content_tfidf)
+
+# Print the similarity scores
+for i, score in enumerate(similarity_scores):
+    print(f"Similarity between keywords in the title and content of article {i+1}: {score[0]}")
