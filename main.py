@@ -7,6 +7,10 @@ from src.utils import get_countries_with_most_media_organizations
 from src.utils import get_countries_with_articles_written_about_them
 from src.utils import get_websites_reporting_on_regions
 from src.utils import sentiment_statistics
+from src.keyword_extraction.custom_tfidf_keyword_extraction import extract_keywords_custom_tfidf
+
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 data_path = cfg.news_data_path
@@ -58,8 +62,31 @@ print("Top 10 countries with the highest number of articles written about them:"
 #     print()
 
 # Calculate sentiment statistics
-sentiment_stats = sentiment_statistics(news_data)
+# sentiment_stats = sentiment_statistics(news_data)
+#
+# # Display the sentiment statistics
+# print("Sentiment Statistics:")
+# print(sentiment_stats)
 
-# Display the sentiment statistics
-print("Sentiment Statistics:")
-print(sentiment_stats)
+# Extract keywords using custom TF-IDF
+custom_tfidf_keywords = extract_keywords_custom_tfidf(news_data)
+
+print("Custom TF-IDF keywords:")
+for i, keywords in enumerate(custom_tfidf_keywords):
+    print(f"Keywords of article {i+1}: {keywords}")
+
+# COMPARE SIMILARITY BETWEEN KEYWORDS IN TITLE AND CONTENT
+
+# Extract keywords using custom TF-IDF for both title and content
+news_data['title_keywords'] = extract_keywords_custom_tfidf(news_data['title'])
+news_data['content_keywords'] = extract_keywords_custom_tfidf(news_data['content'])
+
+# Calculate the similarity between the keywords in the title and the content
+vectorizer = TfidfVectorizer()
+title_tfidf = vectorizer.fit_transform([' '.join(keywords) for keywords in news_data['title_keywords']])
+content_tfidf = vectorizer.transform([' '.join(keywords) for keywords in news_data['content_keywords']])
+similarity_scores = cosine_similarity(title_tfidf, content_tfidf)
+
+# Print the similarity scores
+for i, score in enumerate(similarity_scores):
+    print(f"Similarity between keywords in the title and content of article {i+1}: {score[0]}")
