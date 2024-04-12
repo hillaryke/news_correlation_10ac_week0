@@ -28,6 +28,9 @@ traffic_data = data_loader.load_traffic_data()
 news_data = data_loader.load_news_data()
 domain_info = data_loader.load_domain_info()
 
+# Pick a sample of the news data - the first 100 rows
+# news_data = news_data.tail(100)
+
 
 
 
@@ -72,6 +75,12 @@ news_data['tags'] = categorize_headlines(news_data['title'], defined_tags)
 
 # Create a DataFrame for the tags and their counts
 tags_df = create_tags_df(news_data)
+
+# Remove the "Other" tag for meaningful analysis
+tags_df = tags_df[tags_df['Tag'] != 'Other']
+
+# Select the top 10 tags
+tags_df = tags_df.head(5)
 
 # Plot the tag counts
 plot_tag_counts(tags_df)
