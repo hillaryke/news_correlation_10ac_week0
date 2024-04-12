@@ -12,6 +12,7 @@ from src.keyword_extraction.custom_tfidf_keyword_extraction import extract_keywo
 from src.utils import categorize_headlines
 from src.utils import clean_text, create_tags_df, save_df_to_csv
 from src.defined_tags import defined_tags
+from src.utils import plot_tag_counts
 
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -71,6 +72,9 @@ news_data['tags'] = categorize_headlines(news_data['title'], defined_tags)
 
 # Create a DataFrame for the tags and their counts
 tags_df = create_tags_df(news_data)
+
+# Plot the tag counts
+plot_tag_counts(tags_df)
 
 # Save the DataFrame to a CSV file
 save_df_to_csv(tags_df, 'data/findings/tags_count.csv')

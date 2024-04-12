@@ -2,6 +2,8 @@ import spacy
 from collections import Counter
 from textblob import TextBlob
 import pandas as pd
+import matplotlib.pyplot as plt
+
 import re
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
@@ -188,3 +190,21 @@ def create_tags_df(news_data):
 
 def save_df_to_csv(df, file_path):
     df.to_csv(file_path, index=False)
+
+
+
+def plot_tag_counts(tags_df):
+    # Create a bar chart
+    plt.figure(figsize=(10, 6))
+    plt.barh(tags_df['Tag'], tags_df['Count'], color='skyblue')
+
+    # Add labels and title
+    plt.xlabel('Count')
+    plt.ylabel('Tag')
+    plt.title('Tag Counts')
+
+    # Invert the y-axis so the tag with the highest count is at the top
+    plt.gca().invert_yaxis()
+
+    # Display the plot
+    plt.show()
