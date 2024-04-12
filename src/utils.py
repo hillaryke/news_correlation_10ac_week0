@@ -11,6 +11,7 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 import string
 import nltk
+import en_core_web_sm
 
 nltk.download('stopwords')
 nltk.download('wordnet')
@@ -61,22 +62,28 @@ def get_countries_with_most_media_organizations(domain_info, top_N):
 def get_countries_with_articles_written_about_them(news_data, top_N):
     """Get the top N countries with the highest number of articles written about them"""
 
-    # Load the SpaCy model
-    nlp = spacy.load("en_core_web_sm")
+    nlp = en_core_web_sm.load()
+
+    # nlp.max_length = 3500000  # Increase the maximum length limit
 
     # Concatenating all the news articles into a single string
-    all_articles = " ".join(news_data['content'].dropna())
+    all_articles = " ".join(news_data['title'].dropna())
 
-    # Using SpaCy to process the text
-    doc = nlp(all_articles)
+    # Split the text into chunks of 1,000,000 characters
+    chunks = [all_articles[i:i + 1000000] for i in range(0, len(all_articles), 1000000)]
 
-    # Extracting the countries mentioned in the articles
-    countries = [ent.text for ent in doc.ents if ent.label_ == "GPE"]
+    # Initialize a Counter object to store the country counts
+    country_counts = Counter()
 
-    # Counting the number of times each country is mentioned
-    country_counts = Counter(countries)
+    # Process each chunk separately
+    for chunk in chunks:
+        doc = nlp(chunk)
+        # Extracting the countries mentioned in the articles
+        countries = [ent.text for ent in doc.ents if ent.label_ == "GPE"]
+        # Update the country counts
+        country_counts.update(countries)
 
-    # Return the top N countries
+    # Print the top N countries
     return country_counts.most_common(top_N)
 
 def get_websites_reporting_on_regions(news_data, regions):
@@ -201,10 +208,41 @@ def plot_tag_counts(tags_df):
     # Add labels and title
     plt.xlabel('Count')
     plt.ylabel('Tag')
-    plt.title('Tag Counts')
+    plt.title('Headline tags count')
 
     # Invert the y-axis so the tag with the highest count is at the top
     plt.gca().invert_yaxis()
+
+    # Display the plot
+    plt.show()
+
+
+def categorize_word_count(count):
+    if count <= 5:
+        return 'Short'
+    elif count <= 10:
+        return 'Medium'
+    else:
+        return 'Long'
+
+def create_pie_chart(data):
+    # Get the count of each category
+    word_count_categories = data['word_count_category'].value_counts()
+
+    # Create the pie chart
+    word_count_categories.plot.pie(autopct='%1.1f%%')
+
+    # Display the plot
+    plt.show()
+
+
+
+def create_countries_most_common_pie_chart_from_csv(file_path):
+    # Read the CSV file into a DataFrame
+    df = pd.read_csv(file_path)
+
+    # Create the pie chart
+    df.set_index('Country')['Count'].plot.pie(autopct='%1.1f%%')
 
     # Display the plot
     plt.show()
