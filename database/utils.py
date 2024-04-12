@@ -3,13 +3,20 @@ from psycopg2 import OperationalError
 
 def create_connection():
     connection = None
+
+    # Database connection parameters
+    dbname = 'postgres'
+    user = 'news_admin'
+    password = 'pass123'
+    host = 'localhost'
+
     try:
+        # Establishing the connection
         connection = psycopg2.connect(
-            database="your_database",
-            user="your_username",
-            password="your_password",
-            host="localhost",
-            port="5432",
+            dbname=dbname,
+            user=user,
+            password=password,
+            host=host
         )
         print("Connection to PostgreSQL DB successful")
     except OperationalError as e:

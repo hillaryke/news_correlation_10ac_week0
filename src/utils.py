@@ -3,6 +3,15 @@ from collections import Counter
 from textblob import TextBlob
 import pandas as pd
 import re
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import LatentDirichletAllocation
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+import string
+import nltk
+
+nltk.download('stopwords')
+nltk.download('wordnet')
 
 # Function to preprocess source_name into source_id
 def preprocess_source_id(source_name):
@@ -124,3 +133,58 @@ def sentiment_statistics(news_data):
         'neutral_sentiment': neutral_sentiment,
         'negative_sentiment': negative_sentiment
     })
+
+
+# Function to categorize the headlines into tags
+def categorize_headlines(headlines, tags):
+    # Initialize an empty list to store the categories
+    categories = []
+
+    # Iterate through the headlines
+    for headline in headlines:
+        # Convert the headline to lowercase
+        headline = headline.lower()
+
+        # Initialize a list to store the tags for the headline
+        headline_tags = []
+
+        # Iterate through the tags
+        for tag, keywords in tags.items():
+            # Check if any keyword for the tag is present in the headline
+            if any(keyword in headline for keyword in keywords):
+                headline_tags.append(tag)
+
+        # If no tags were found, assign the "Other" tag
+        if not headline_tags:
+            headline_tags.append("Other")
+
+        # Add the tags for the headline to the categories list
+        categories.append(', '.join(headline_tags))
+
+    return categories
+
+
+def clean_text(text):
+    stop = set(stopwords.words('english'))
+    exclude = set(string.punctuation)
+    lemma = WordNetLemmatizer()
+
+    if not isinstance(text, str):
+        return ""
+    stop_free = ' '.join([word for word in text.lower().split() if word not in stop])
+    punc_free = ''.join(ch for ch in stop_free if ch not in exclude)
+    normalized = ' '.join(lemma.lemmatize(word) for word in punc_free.split())
+    return normalized
+
+
+
+def create_tags_df(news_data):
+    tags = news_data['tags'].str.split(',')
+    tags = pd.Series([tag for sublist in tags for tag in sublist])
+    tag_counts = tags.value_counts()
+    tags_df = tag_counts.reset_index()
+    tags_df.columns = ['Tag', 'Count']
+    return tags_df
+
+def save_df_to_csv(df, file_path):
+    df.to_csv(file_path, index=False)
