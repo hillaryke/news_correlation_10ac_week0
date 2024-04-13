@@ -13,6 +13,8 @@ conf/**/*credentials*
 data/**
 logs/**
 
+**/data/**
+
 # except their sub-folders
 !data/**/
 !logs/**/
