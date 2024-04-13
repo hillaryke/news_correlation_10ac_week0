@@ -151,10 +151,9 @@ def create_choropleth_map(file_path):
 
     return choropleth
 
-def create_global_rank_report_scatter_graph(file_path):
-    final_data = pd.read_csv(file_path)
+def create_global_rank_report_scatter_graph(global_rank_reports_sentiment):
 
-    final_data_top_10000 = final_data[final_data['GlobalRank'] <= 10000]
+    final_data_top_10000 = global_rank_reports_sentiment[global_rank_reports_sentiment['GlobalRank'] <= 10000]
 
     # Create a scatter plot
     scatter = alt.Chart(final_data_top_10000).mark_circle(size=60).encode(
@@ -170,15 +169,37 @@ def create_global_rank_report_scatter_graph(file_path):
 
     return scatter
 
+def create_sentiment_chart(title_sentiment_stats):
+    chart = alt.Chart(title_sentiment_stats).mark_bar().encode(
+        x='source_name:N',
+        y='title_sentiment:Q',
+        color=alt.condition(
+            alt.datum.title_sentiment > 0,
+            alt.value("steelblue"),  # The positive color
+            alt.value("orange")  # The negative color
+        )
+    ).properties(width=600)
+
+    return chart
+
 def main():
     st.title('News Headline tags analysis')
     choropleth = create_choropleth_map('../data/findings/countries_in_articles.csv')
 
     st.plotly_chart(choropleth)
 
+    # Load or calculate your title_sentiment_stats DataFrame here
+    global_rank_reports_sentiment = pd.read_csv('../data/findings/global_rank_sentiment_report.csv')
+
+    # Create the sentiment chart
+    sentiment_chart = create_sentiment_chart(global_rank_reports_sentiment)
+
+    # Display the sentiment chart
+    st.altair_chart(sentiment_chart)
+
 
     # Global rank report scatter graph
-    global_rank_report_graph = create_global_rank_report_scatter_graph('../data/findings/global_rank_sentiment_report.csv')
+    global_rank_report_graph = create_global_rank_report_scatter_graph(global_rank_reports_sentiment)
 
     # Display the global rank report scatter graph
     st.altair_chart(global_rank_report_graph)
