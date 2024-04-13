@@ -12,6 +12,14 @@ def load_data(file_path):
     news_data = pd.read_csv(file_path)
     return news_data
 
+##################################
+# Page configuration
+st.set_page_config(
+    page_title="News analysis and correlation",
+    page_icon=":newspaper:",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
 def create_headline_tag_chart(tags_df):
     plt.figure(figsize=(6, 4))  # Increase the size of your plot
@@ -36,15 +44,6 @@ def create_countries_most_common_pie_chart_from_csv(file_path):
     # Create the pie chart
     df.set_index('Country')['Count'].plot.pie(autopct='%1.1f%%')
     st.pyplot(fig)
-
-
-# Set the page config to have the title and layout you want
-st.set_page_config(
-    page_title="News Headline tags analysis",
-    page_icon=":newspaper:",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
 
 def main():
     st.title('News Headline tags analysis')
