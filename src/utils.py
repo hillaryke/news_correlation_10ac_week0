@@ -59,7 +59,8 @@ def get_countries_with_most_media_organizations(domain_info, top_N):
     return country_counts.head(top_N)
 
 
-def get_countries_with_articles_written_about_them(news_data, top_N):
+
+def get_countries_with_articles_written_about_them(news_data, top_N=None):
     """Get the top N countries with the highest number of articles written about them"""
 
     nlp = en_core_web_sm.load()
@@ -83,8 +84,8 @@ def get_countries_with_articles_written_about_them(news_data, top_N):
         # Update the country counts
         country_counts.update(countries)
 
-    # Print the top N countries
-    return country_counts.most_common(top_N)
+    # Return the top N countries if top_N is specified, else return all countries
+    return country_counts.most_common(top_N) if top_N is not None else country_counts.most_common()
 
 def get_websites_reporting_on_regions(news_data, regions):
     """Get the websites that reported about specific regions"""
