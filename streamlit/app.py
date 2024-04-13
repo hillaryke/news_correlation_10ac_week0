@@ -7,6 +7,7 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 import altair as alt
+import plotly.express as px
 
 alt.themes.enable("dark")
 
@@ -109,7 +110,9 @@ def create_countries_most_common_pie_chart_from_csv(file_path):
     # Read the CSV file into a DataFrame
     df = pd.read_csv(file_path)
 
-    st.title('Countries with most articles written about them')
+    st.title('Countries with most articles written about them')\
+
+
 
     # Create the pie chart
     pie_chart = alt.Chart(df).transform_window(
@@ -128,8 +131,31 @@ def create_countries_most_common_pie_chart_from_csv(file_path):
 
     st.altair_chart(pie_chart)
 
+def create_choropleth_map(file_path):
+    # Read the CSV file into a DataFrame
+    df = pd.read_csv(file_path)
+
+    choropleth = px.choropleth(df, locations='Country', color='Count',
+                               locationmode="country names",
+                               color_continuous_scale='blues',
+                               range_color=(0, max(df['Count'])),
+                               labels={'Count':'Number of Articles'}
+                              )
+    choropleth.update_layout(
+        template='plotly_dark',
+        plot_bgcolor='rgba(0, 0, 0, 0)',
+        paper_bgcolor='rgba(0, 0, 0, 0)',
+        margin=dict(l=0, r=0, t=0, b=0),
+        height=450
+    )
+
+    return choropleth
+
 def main():
     st.title('News Headline tags analysis')
+    choropleth = create_choropleth_map('../data/findings/countries_in_articles.csv')
+
+    st.plotly_chart(choropleth)
 
     tags_df = load_data('../data/findings/tags_count.csv')
 
