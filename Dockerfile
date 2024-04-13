@@ -7,11 +7,14 @@ WORKDIR /app
 # Add the Streamlit directory contents into the container at /app
 ADD ./streamlit /app
 
+# Add the data directory contents into the container at /app/data
+ADD ./streamlit/data /app/data
+
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Make port 80 available to the world outside this container
 EXPOSE 80
 
-# Run app.py when the container launches
-CMD ["python", "app.py"]
+# Run app.py using Streamlit when the container launches
+CMD ["streamlit", "run", "app.py"]

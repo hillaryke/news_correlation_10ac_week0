@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: news-analysis-app-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: news-analysis-app
+  template:
+    metadata:
+      labels:
+        app: news-analysis-app
+    spec:
+      containers:
+      - name: news-analysis-app
+        image: hilare/news-analysis-app:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: news-analysis-app-service
+spec:
+  selector:
+    app: news-analysis-app
+  ports:
+    - protocol: TCP
+      port: 8501
+      targetPort: 8501
+  type: LoadBalancer
