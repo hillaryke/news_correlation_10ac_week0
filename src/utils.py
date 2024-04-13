@@ -2,7 +2,19 @@ import spacy
 from collections import Counter
 from textblob import TextBlob
 import pandas as pd
+import matplotlib.pyplot as plt
+
 import re
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import LatentDirichletAllocation
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+import string
+import nltk
+import en_core_web_sm
+
+nltk.download('stopwords')
+nltk.download('wordnet')
 
 # Function to preprocess source_name into source_id
 def preprocess_source_id(source_name):
@@ -50,22 +62,28 @@ def get_countries_with_most_media_organizations(domain_info, top_N):
 def get_countries_with_articles_written_about_them(news_data, top_N):
     """Get the top N countries with the highest number of articles written about them"""
 
-    # Load the SpaCy model
-    nlp = spacy.load("en_core_web_sm")
+    nlp = en_core_web_sm.load()
+
+    # nlp.max_length = 3500000  # Increase the maximum length limit
 
     # Concatenating all the news articles into a single string
-    all_articles = " ".join(news_data['content'].dropna())
+    all_articles = " ".join(news_data['title'].dropna())
 
-    # Using SpaCy to process the text
-    doc = nlp(all_articles)
+    # Split the text into chunks of 1,000,000 characters
+    chunks = [all_articles[i:i + 1000000] for i in range(0, len(all_articles), 1000000)]
 
-    # Extracting the countries mentioned in the articles
-    countries = [ent.text for ent in doc.ents if ent.label_ == "GPE"]
+    # Initialize a Counter object to store the country counts
+    country_counts = Counter()
 
-    # Counting the number of times each country is mentioned
-    country_counts = Counter(countries)
+    # Process each chunk separately
+    for chunk in chunks:
+        doc = nlp(chunk)
+        # Extracting the countries mentioned in the articles
+        countries = [ent.text for ent in doc.ents if ent.label_ == "GPE"]
+        # Update the country counts
+        country_counts.update(countries)
 
-    # Return the top N countries
+    # Print the top N countries
     return country_counts.most_common(top_N)
 
 def get_websites_reporting_on_regions(news_data, regions):
@@ -124,3 +142,107 @@ def sentiment_statistics(news_data):
         'neutral_sentiment': neutral_sentiment,
         'negative_sentiment': negative_sentiment
     })
+
+
+# Function to categorize the headlines into tags
+def categorize_headlines(headlines, tags):
+    # Initialize an empty list to store the categories
+    categories = []
+
+    # Iterate through the headlines
+    for headline in headlines:
+        # Convert the headline to lowercase
+        headline = headline.lower()
+
+        # Initialize a list to store the tags for the headline
+        headline_tags = []
+
+        # Iterate through the tags
+        for tag, keywords in tags.items():
+            # Check if any keyword for the tag is present in the headline
+            if any(keyword in headline for keyword in keywords):
+                headline_tags.append(tag)
+
+        # If no tags were found, assign the "Other" tag
+        if not headline_tags:
+            headline_tags.append("Other")
+
+        # Add the tags for the headline to the categories list
+        categories.append(', '.join(headline_tags))
+
+    return categories
+
+
+def clean_text(text):
+    stop = set(stopwords.words('english'))
+    exclude = set(string.punctuation)
+    lemma = WordNetLemmatizer()
+
+    if not isinstance(text, str):
+        return ""
+    stop_free = ' '.join([word for word in text.lower().split() if word not in stop])
+    punc_free = ''.join(ch for ch in stop_free if ch not in exclude)
+    normalized = ' '.join(lemma.lemmatize(word) for word in punc_free.split())
+    return normalized
+
+
+
+def create_tags_df(news_data):
+    tags = news_data['tags'].str.split(',')
+    tags = pd.Series([tag for sublist in tags for tag in sublist])
+    tag_counts = tags.value_counts()
+    tags_df = tag_counts.reset_index()
+    tags_df.columns = ['Tag', 'Count']
+    return tags_df
+
+def save_df_to_csv(df, file_path):
+    df.to_csv(file_path, index=False)
+
+
+
+def plot_tag_counts(tags_df):
+    # Create a bar chart
+    plt.figure(figsize=(10, 6))
+    plt.barh(tags_df['Tag'], tags_df['Count'], color='skyblue')
+
+    # Add labels and title
+    plt.xlabel('Count')
+    plt.ylabel('Tag')
+    plt.title('Headline tags count')
+
+    # Invert the y-axis so the tag with the highest count is at the top
+    plt.gca().invert_yaxis()
+
+    # Display the plot
+    plt.show()
+
+
+def categorize_word_count(count):
+    if count <= 5:
+        return 'Short'
+    elif count <= 10:
+        return 'Medium'
+    else:
+        return 'Long'
+
+def create_pie_chart(data):
+    # Get the count of each category
+    word_count_categories = data['word_count_category'].value_counts()
+
+    # Create the pie chart
+    word_count_categories.plot.pie(autopct='%1.1f%%')
+
+    # Display the plot
+    plt.show()
+
+
+
+def create_countries_most_common_pie_chart_from_csv(file_path):
+    # Read the CSV file into a DataFrame
+    df = pd.read_csv(file_path)
+
+    # Create the pie chart
+    df.set_index('Country')['Count'].plot.pie(autopct='%1.1f%%')
+
+    # Display the plot
+    plt.show()

@@ -37,3 +37,7 @@ def save_to_db(data, table_name):
 
     # Close the connection
     engine.dispose()
+
+def save_to_csv(data, file_path):
+    # Save the data to a CSV file
+    data.to_csv(file_path, index=False)

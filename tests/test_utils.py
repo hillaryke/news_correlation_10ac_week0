@@ -2,7 +2,6 @@ import unittest
 from textblob import TextBlob
 from src.utils import calculate_sentiment
 
-
 class TestCalculateSentiment(unittest.TestCase):
     def test_calculate_sentiment(self):
         # Define a test case
