@@ -6,6 +6,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
+import altair as alt
+
 
 
 def load_data(file_path):
@@ -20,6 +22,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+alt.themes.enable("dark")
 
 def create_headline_tag_chart(tags_df):
     plt.figure(figsize=(6, 4))  # Increase the size of your plot
