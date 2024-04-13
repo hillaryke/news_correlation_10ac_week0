@@ -20,6 +20,8 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# path where the data is stored
+data_path = 'data/findings/'
 
 #######################
 # CSS styling
@@ -72,7 +74,7 @@ st.markdown("""
 
 #######################
 # Load data
-df_reshaped = pd.read_csv('../data/findings/tags_count.csv')
+# df_reshaped = pd.read_csv('../data/findings/tags_count.csv')
 
 #######################
 # Sidebar
@@ -114,7 +116,7 @@ def create_countries_most_common_pie_chart_from_csv(file_path):
     # Read the CSV file into a DataFrame
     df = pd.read_csv(file_path)
 
-    st.markdown('##### Countries with most articles written about them')
+    st.markdown('##### Countries and cities with most articles written about them')
 
     # Create the pie chart
     pie_chart = alt.Chart(df).transform_window(
@@ -124,7 +126,7 @@ def create_countries_most_common_pie_chart_from_csv(file_path):
         frame=[None, 0]
     ).mark_arc().encode(
         alt.Theta('Count:Q', stack=True, sort=alt.SortField('order'), title=None),
-        alt.Color('Country:N', legend=alt.Legend(title='Countries')),
+        alt.Color('Country:N', legend=alt.Legend(title='Countries/Cities')),
         alt.Tooltip(['Country:N', 'Count:Q'])
     ).properties(
         width=350,
@@ -218,12 +220,14 @@ def graph_of_countries_with_articles_written_about_them(tags_df, top_N):
                  )
 
 def main():
-    # Load the data
-    tags_df = load_data('../data/findings/tags_count.csv')
+    st.title('News Analysis Dashboard')
 
-    choropleth = create_choropleth_map('../data/findings/countries_in_articles.csv')
+    # Load the data
+    tags_df = load_data(data_path + 'tags_count.csv')
+
+    choropleth = create_choropleth_map(data_path + 'countries_in_articles.csv')
     # Load or calculate your title_sentiment_stats DataFrame here
-    global_rank_reports_sentiment = pd.read_csv('../data/findings/global_rank_sentiment_report.csv')
+    global_rank_reports_sentiment = pd.read_csv(data_path + 'global_rank_sentiment_report.csv')
 
     # Create charts
     global_rank_report_graph = create_global_rank_report_scatter_graph(global_rank_reports_sentiment)
@@ -239,7 +243,7 @@ def main():
 
     # plot a graph of countries with articles written about them in the second column
     with col2:
-        create_countries_most_common_pie_chart_from_csv('../data/findings/countries_most_common.csv')
+        create_countries_most_common_pie_chart_from_csv(data_path + 'countries_most_common.csv')
 
     # Create columns for the second row
     col3, col4 = st.columns((4, 2), gap='medium')
