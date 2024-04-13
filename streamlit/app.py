@@ -38,6 +38,14 @@ def create_countries_most_common_pie_chart_from_csv(file_path):
     st.pyplot(fig)
 
 
+# Set the page config to have the title and layout you want
+st.set_page_config(
+    page_title="News Headline tags analysis",
+    page_icon=":newspaper:",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
 def main():
     st.title('News Headline tags analysis')
 
