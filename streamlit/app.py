@@ -151,38 +151,64 @@ def create_choropleth_map(file_path):
 
     return choropleth
 
+def create_title_sentiment_scatter_graph(file_path):
+    final_data = pd.read_csv(file_path)
+
+    final_data_top_10000 = final_data[final_data['GlobalRank'] <= 10000]
+
+    # Create a scatter plot
+    scatter = alt.Chart(final_data_top_10000).mark_circle(size=60).encode(
+        x='total_reports:Q',
+        y='GlobalRank:Q',
+        color=alt.Color('title_sentiment:Q', scale=alt.Scale(scheme='blueorange')),
+        tooltip=['Domain:N', 'total_reports:Q', 'GlobalRank:Q', 'title_sentiment:Q']
+    ).properties(
+        width=600,
+        height=400,
+        title='Impact of Frequent News Reporting and Sentiment on Website\'s Global Ranking'
+    )
+
+    return scatter
+
 def main():
     st.title('News Headline tags analysis')
     choropleth = create_choropleth_map('../data/findings/countries_in_articles.csv')
 
     st.plotly_chart(choropleth)
 
-    tags_df = load_data('../data/findings/tags_count.csv')
 
-    # Remove the "Other" tag for meaningful analysis
-    tags_df = tags_df[tags_df['Tag'] != 'Other']
+    # sentiment chart
+    sentiment_chart = create_title_sentiment_scatter_graph('../data/findings/global_rank_sentiment_report.csv')
 
-    # Select the top 10 tags
-    tags_df = tags_df.head(10)
+    # Display the sentiment chart
+    st.altair_chart(sentiment_chart)
 
-    # Create columns
-    col1, col2, col3 = st.columns((1.5, 4.5, 2), gap='medium')
-
-    # Plot the tag counts in the first column
-    with col1:
-        create_headline_tag_chart(tags_df)
-
-    # plot a graph of countries with articles written about them in the second column
-    with col2:
-        create_countries_most_common_pie_chart_from_csv('../data/findings/countries_most_common.csv')
-
-    # Create a progress chart in the third column
-    with col3:
-        st.title('Headline tags')
-        for index, row in tags_df.iterrows():
-            st.text(f"Tag: {row['Tag']}")
-            st.progress(row['Count'] / tags_df['Count'].max())
-            st.text(f"Count: {row['Count']}")
+    # tags_df = load_data('../data/findings/tags_count.csv')
+    #
+    # # Remove the "Other" tag for meaningful analysis
+    # tags_df = tags_df[tags_df['Tag'] != 'Other']
+    #
+    # # Select the top 10 tags
+    # tags_df = tags_df.head(10)
+    #
+    # # Create columns
+    # col1, col2, col3 = st.columns((1.5, 4.5, 2), gap='medium')
+    #
+    # # Plot the tag counts in the first column
+    # with col1:
+    #     create_headline_tag_chart(tags_df)
+    #
+    # # plot a graph of countries with articles written about them in the second column
+    # with col2:
+    #     create_countries_most_common_pie_chart_from_csv('../data/findings/countries_most_common.csv')
+    #
+    # # Create a progress chart in the third column
+    # with col3:
+    #     st.title('Headline tags')
+    #     for index, row in tags_df.iterrows():
+    #         st.text(f"Tag: {row['Tag']}")
+    #         st.progress(row['Count'] / tags_df['Count'].max())
+    #         st.text(f"Count: {row['Count']}")
 
 
 #######################
