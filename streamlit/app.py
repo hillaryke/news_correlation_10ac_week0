@@ -204,32 +204,44 @@ def main():
     # Display the global rank report scatter graph
     st.altair_chart(global_rank_report_graph)
 
-    # tags_df = load_data('../data/findings/tags_count.csv')
-    #
-    # # Remove the "Other" tag for meaningful analysis
-    # tags_df = tags_df[tags_df['Tag'] != 'Other']
-    #
-    # # Select the top 10 tags
-    # tags_df = tags_df.head(10)
-    #
-    # # Create columns
-    # col1, col2, col3 = st.columns((1.5, 4.5, 2), gap='medium')
-    #
-    # # Plot the tag counts in the first column
-    # with col1:
-    #     create_headline_tag_chart(tags_df)
-    #
-    # # plot a graph of countries with articles written about them in the second column
-    # with col2:
-    #     create_countries_most_common_pie_chart_from_csv('../data/findings/countries_most_common.csv')
-    #
-    # # Create a progress chart in the third column
-    # with col3:
-    #     st.title('Headline tags')
-    #     for index, row in tags_df.iterrows():
-    #         st.text(f"Tag: {row['Tag']}")
-    #         st.progress(row['Count'] / tags_df['Count'].max())
-    #         st.text(f"Count: {row['Count']}")
+    tags_df = load_data('../data/findings/tags_count.csv')
+
+    # Remove the "Other" tag for meaningful analysis
+    tags_df = tags_df[tags_df['Tag'] != 'Other']
+
+    # Select the top 10 tags
+    tags_df = tags_df.head(10)
+
+    # Create columns
+    col1, col2, col3 = st.columns((1.5, 4.5, 2), gap='medium')
+
+    # Plot the tag counts in the first column
+    with col1:
+        create_headline_tag_chart(tags_df)
+
+    # plot a graph of countries with articles written about them in the second column
+    with col2:
+        create_countries_most_common_pie_chart_from_csv('../data/findings/countries_most_common.csv')
+
+    # Create a progress chart in the third column
+    with col3:
+        st.markdown('#### Headline Tags')
+
+        st.dataframe(tags_df,
+                     column_order=("Tag", "Count"),
+                     hide_index=True,
+                     width=None,
+                     column_config={
+                         "Tag": st.column_config.TextColumn(
+                             "Tag",
+                         ),
+                         "Count": st.column_config.ProgressColumn(
+                             "Count",
+                             format="%f",
+                             min_value=0,
+                             max_value=max(tags_df['Count']),
+                         )}
+                     )
 
 
 #######################
