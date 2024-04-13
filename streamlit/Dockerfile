@@ -5,7 +5,7 @@ FROM python:3.8-slim-buster
 WORKDIR /app
 
 # Add the Streamlit directory contents into the container at /app
-ADD ./streamlit /app
+ADD ./ /app
 
 ## Add the data directory contents into the container at /app/data
 #ADD ./.streamlit/data /app/data
