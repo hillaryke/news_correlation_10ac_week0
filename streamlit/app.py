@@ -109,13 +109,24 @@ def create_countries_most_common_pie_chart_from_csv(file_path):
     # Read the CSV file into a DataFrame
     df = pd.read_csv(file_path)
 
-    fig, ax = plt.subplots()
-
     st.title('Countries with most articles written about them')
 
     # Create the pie chart
-    df.set_index('Country')['Count'].plot.pie(autopct='%1.1f%%')
-    st.pyplot(fig)
+    pie_chart = alt.Chart(df).transform_window(
+        startAngle='sum(Count)',
+        endAngle='sum(Count)',
+        sort=[alt.SortField('Count')],
+        frame=[None, 0]
+    ).mark_arc().encode(
+        alt.Theta('Count:Q', stack=True, sort=alt.SortField('order'), title=None),
+        alt.Color('Country:N', legend=alt.Legend(title='Countries')),
+        alt.Tooltip(['Country:N', 'Count:Q'])
+    ).properties(
+        width=400,
+        height=400
+    )
+
+    st.altair_chart(pie_chart)
 
 def main():
     st.title('News Headline tags analysis')
