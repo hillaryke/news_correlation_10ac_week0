@@ -128,11 +128,31 @@ def main():
     # Select the top 10 tags
     tags_df = tags_df.head(10)
 
-    # Plot the tag counts
-    create_headline_tag_chart(tags_df)
+    # Create columns
+    col1, col2, col3 = st.columns((1.5, 4.5, 2), gap='medium')
 
-    # plot a graph of countries with articles written about them
-    create_countries_most_common_pie_chart_from_csv('../data/findings/countries_most_common.csv')
+    # Plot the tag counts in the first column
+    with col1:
+        create_headline_tag_chart(tags_df)
+
+    # plot a graph of countries with articles written about them in the second column
+    with col2:
+        create_countries_most_common_pie_chart_from_csv('../data/findings/countries_most_common.csv')
+
+    # Create a progress chart in the third column
+    with col3:
+        st.title('Headline tags')
+        for index, row in tags_df.iterrows():
+            st.text(f"Tag: {row['Tag']}")
+            st.progress(row['Count'] / tags_df['Count'].max())
+            st.text(f"Count: {row['Count']}")
+
+
+#######################
+# Dashboard Main Panel
+col = st.columns((1.5, 4.5, 2), gap='medium')
+
+
 
 
 if __name__ == '__main__':
