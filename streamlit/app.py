@@ -151,7 +151,7 @@ def create_choropleth_map(file_path):
 
     return choropleth
 
-def create_title_sentiment_scatter_graph(file_path):
+def create_global_rank_report_scatter_graph(file_path):
     final_data = pd.read_csv(file_path)
 
     final_data_top_10000 = final_data[final_data['GlobalRank'] <= 10000]
@@ -163,8 +163,8 @@ def create_title_sentiment_scatter_graph(file_path):
         color=alt.Color('title_sentiment:Q', scale=alt.Scale(scheme='blueorange')),
         tooltip=['Domain:N', 'total_reports:Q', 'GlobalRank:Q', 'title_sentiment:Q']
     ).properties(
-        width=600,
-        height=400,
+        width=900,
+        height=700,
         title='Impact of Frequent News Reporting and Sentiment on Website\'s Global Ranking'
     )
 
@@ -177,11 +177,11 @@ def main():
     st.plotly_chart(choropleth)
 
 
-    # sentiment chart
-    sentiment_chart = create_title_sentiment_scatter_graph('../data/findings/global_rank_sentiment_report.csv')
+    # Global rank report scatter graph
+    global_rank_report_graph = create_global_rank_report_scatter_graph('../data/findings/global_rank_sentiment_report.csv')
 
-    # Display the sentiment chart
-    st.altair_chart(sentiment_chart)
+    # Display the global rank report scatter graph
+    st.altair_chart(global_rank_report_graph)
 
     # tags_df = load_data('../data/findings/tags_count.csv')
     #
