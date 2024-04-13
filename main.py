@@ -77,19 +77,6 @@ merged_data = pd.merge(total_reports, traffic_data, left_on='url', right_on='Dom
 # save the title sentiment statistics to a CSV file
 save_to_csv(title_sentiment_stats, 'data/findings/title_sentiment_stats.csv')
 
-# Assuming the DataFrame is named as 'title_sentiment_stats'
-chart = alt.Chart(title_sentiment_stats).mark_bar().encode(
-    x='source_name:N',
-    y='title_sentiment:Q',
-    color=alt.condition(
-        alt.datum.title_sentiment > 0,
-        alt.value("steelblue"),  # The positive color
-        alt.value("orange")  # The negative color
-    )
-).properties(width=600)
-
-chart.display()
-
 
 # save the final data to a CSV file
 save_to_csv(global_rank_sentiment_report, 'data/findings/global_rank_sentiment_report.csv')
@@ -99,7 +86,7 @@ save_to_csv(global_rank_sentiment_report, 'data/findings/global_rank_sentiment_r
 # Filter the DataFrame
 global_rank_sentiment_report_top_10000 = global_rank_sentiment_report[global_rank_sentiment_report['GlobalRank'] <= 10000]
 
-# Create a scatter plot
+# Example display Scatter plot graph
 scatter = alt.Chart(global_rank_sentiment_report_top_10000).mark_circle(size=60).encode(
     x='total_reports:Q',
     y='GlobalRank:Q',
@@ -114,61 +101,31 @@ scatter = alt.Chart(global_rank_sentiment_report_top_10000).mark_circle(size=60)
 scatter.display()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Create tags for the headlines
 news_data['tags'] = categorize_headlines(news_data['title'], defined_tags)
 
-# # Create a DataFrame for the tags and their counts
-# tags_df = create_tags_df(news_data)
-#
-# # Remove the "Other" tag for meaningful analysis
-# tags_df = tags_df[tags_df['Tag'] != 'Other']
-#
-# # Select the top 10 tags
-# tags_df = tags_df.head(5)
-#
-# # Plot the tag counts
-# plot_tag_counts(tags_df)
-#
-# # Save the DataFrame to a CSV file
-# save_df_to_csv(tags_df, 'data/findings/tags_count.csv')
-#
-#
-# countries_written_about = get_countries_with_articles_written_about_them(news_data, top_N)
-# df_countries_most_common = pd.DataFrame(countries_written_about, columns=['Country', 'Count'])
-# save_df_to_csv(df_countries_most_common, 'data/findings/countries_most_common.csv')
-# print(countries_written_about)
-#
-# # plot a graph of countries with articles written about them
-# create_countries_most_common_pie_chart_from_csv('data/findings/countries_most_common.csv')
+# Create a DataFrame for the tags and their counts
+tags_df = create_tags_df(news_data)
+
+# Remove the "Other" tag for meaningful analysis
+tags_df = tags_df[tags_df['Tag'] != 'Other']
+
+# Plot the tag counts
+plot_tag_counts(tags_df)
+
+# Save the DataFrame to a CSV file
+save_df_to_csv(tags_df, 'data/findings/tags_count.csv')
+
+
+countries_written_about = get_countries_with_articles_written_about_them(news_data, top_N)
+df_countries_most_common = pd.DataFrame(countries_written_about, columns=['Country', 'Count'])
+save_df_to_csv(df_countries_most_common, 'data/findings/countries_most_common.csv')
+print(countries_written_about)
+
+# plot a graph of countries with articles written about them
+create_countries_most_common_pie_chart_from_csv('data/findings/countries_most_common.csv')
 
 
 countries_in_articles = get_countries_with_articles_written_about_them(news_data, 100)
 df_countries_in_articles = pd.DataFrame(countries_in_articles, columns=['Country', 'Count'])
 save_df_to_csv(df_countries_in_articles, 'data/findings/countries_in_articles.csv')
-
-# Websites with highest word count
-# # Apply the function to the 'title_word_count' column
-# news_data['word_count_category'] = news_data['title_word_count'].apply(categorize_word_count)
-#
-# # Create the pie chart
-# create_pie_chart(news_data)
